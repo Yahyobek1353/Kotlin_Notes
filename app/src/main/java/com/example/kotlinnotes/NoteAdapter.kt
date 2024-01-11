@@ -2,20 +2,25 @@ package com.example.kotlinnotes
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.text.style.ClickableSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.kotlinnotes.databinding.ActivityMainBinding
+import com.example.kotlinnotes.databinding.FragmentSecondBinding
+import com.example.kotlinnotes.databinding.ItemNoteBinding
 
 
-
-class NoteAdapter : RecyclerView.Adapter<NoteAdapter.NoteViewHolder> {
+class NoteAdapter: RecyclerView.Adapter<NoteAdapter.NoteViewHolder> {
+    private lateinit var binding: ItemNoteBinding
     private var inflater: LayoutInflater
     private var list: MutableList<Note> = ArrayList<Note>()
     private var listeners: ListenersBtn? = null
     private val nameComparator: Comparator<Note> = compareBy { it.title }
+
 
     constructor(context: Context?, listeners: ListenersBtn?) {
         inflater = LayoutInflater.from(context)
@@ -47,13 +52,17 @@ class NoteAdapter : RecyclerView.Adapter<NoteAdapter.NoteViewHolder> {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
-        val view: View = inflater.inflate(R.layout.item_note, parent, false)
-        return NoteViewHolder(view)
+        val Binding = ItemNoteBinding.inflate(LayoutInflater.from(parent.context),parent , false)
+        binding = Binding
+        return NoteViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
         holder.onBind(list[position])
-        holder.btnEdit?.setOnClickListener { listeners!!.change(holder.adapterPosition) }
+        holder.binding.itemBtnEdit.setOnClickListener { listeners!!.change(holder.adapterPosition) }
+        holder.binding.itemBtnDelete.setOnClickListener{
+            listeners?.delete(holder.adapterPosition)
+        }
     }
 
     override fun getItemCount(): Int {
@@ -61,32 +70,26 @@ class NoteAdapter : RecyclerView.Adapter<NoteAdapter.NoteViewHolder> {
     }
 
     fun sortAbc() {
-        list.sortBy { list. }
+        list.sortBy { list.size }
     }
 
-    class NoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var img: ImageView? = null
-        var title: TextView? = null
-        var desc: TextView? = null
-        var date: TextView? = null
-        var btnEdit: ImageView? = null
+    fun listDelete(position: Int){
+        list.remove(list[position])
+        notifyItemRemoved(position)
+    }
 
-        init {
-            img = itemView.findViewById(R.id.item_img)
-            title = itemView.findViewById(R.id.item_tv_title)
-            desc = itemView.findViewById(R.id.item_tv_des)
-            date = itemView.findViewById(R.id.item_tv_date)
-            btnEdit = itemView.findViewById(R.id.item_btn_edit)
-        }
+    class NoteViewHolder(val binding: ItemNoteBinding) : RecyclerView.ViewHolder(binding.root) {
+
 
         fun onBind(note: Note) {
-            title?.text = note.title
-            desc?.text = note.description
-            date?.text = note.date
+            binding.itemTvTitle.text = note.title
+            binding.itemTvDes.text = note.description
+            binding.itemTvDate.text = note.date
         }
     }
 
     interface ListenersBtn {
         fun change(position: Int)
+        fun delete(position : Int)
     }
 }

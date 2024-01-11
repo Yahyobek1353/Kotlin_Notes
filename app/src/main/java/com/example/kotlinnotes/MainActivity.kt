@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val transaction = supportFragmentManager.beginTransaction()
@@ -17,16 +18,16 @@ class MainActivity : AppCompatActivity() {
             "new_note", this
         ) { _: String?, result: Bundle ->
             val note = result.getSerializable("note") as Note?
-            mainList.add(note)
+            note?.let { mainList.add(it) }
+            val adapter = NoteAdapter()
             adapter.addNote(mainList)
+
         }
     }
 
-
 }
-
-    fun NoteAdapter.addNote(list: List<Note?>) {
-     val mainList: MutableList<Note?> = ArrayList()
+   object{
+       private val mainList = arrayListOf<Note>()
     fun getList(): List<Note?>? {
         return mainList
     }

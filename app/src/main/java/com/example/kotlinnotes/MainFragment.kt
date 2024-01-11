@@ -1,5 +1,7 @@
 package com.example.kotlinnotes
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -69,4 +71,14 @@ class MainFragment : Fragment(), NoteAdapter.ListenersBtn {
         transaction.addToBackStack("SecondFragment")
         transaction.commit()
     }
+
+    override fun delete(position: Int) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Remove Note?")
+            .setMessage("if you delete a note, it won't be there anymore, are you sure")
+            .setNegativeButton("No", null)
+            .setPositiveButton("Yes"
+            ) { _, _ -> adapter?.listDelete(position)}
+    }
 }
+
